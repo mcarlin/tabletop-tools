@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
+from .utils.formats import parse_json
 from .config import Config
 
 
@@ -15,7 +16,7 @@ def repack_objects(base_path: Path) -> List[Dict[str, Any]]:
         path = base_path.joinpath(guid)
         if not path.is_dir():
             raise Exception("Objects must be directories")
-        obj = json.loads(path.joinpath("object.json").read_text(encoding="utf-8"))
+        obj = parse_json(path.joinpath("object.json").read_text(encoding="utf-8"))
         obj["GUID"] = guid
 
         script_path = path.joinpath("script.lua")
@@ -45,7 +46,7 @@ def repack_objects(base_path: Path) -> List[Dict[str, Any]]:
 
 
 def repack(*, config: Config) -> Dict[str, Any]:
-    savegame = json.loads(config.savegame.read_text(encoding="utf-8"))
+    savegame = parse_json(config.savegame.read_text(encoding="utf-8"))
     assert isinstance(savegame, dict)
 
     global_script = config.global_script.read_text(encoding="utf-8")
